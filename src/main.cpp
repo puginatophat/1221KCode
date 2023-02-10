@@ -34,7 +34,6 @@ bool shooterOutward = true;
 bool isRed = true;
 bool normalSpeed = true;
 bool shootAuton = true;
-bool isSkills = true;
 
 // define your global instances of motors and other devices here
 
@@ -437,7 +436,6 @@ int drivePID(int cm, int startVelocity)
   {
     coef = -1;
   }
-
   int averagePosition = 0;
   int subtractFromPosition  = (abs(cm)-50)/0.08866;
   while (abs(averagePosition) <= abs(desiredDrive))
@@ -527,13 +525,16 @@ void shootLow(int speed, int numDiscs) //shoot into the low goal
   shootMotor.stop();
 }
 
-void shootHigh (int speed, int numDiscs) //shoot into the high goal
+// void stableShootAuton()
+
+void shootHigh (int speedRPM, int numDiscs) //shoot into the high goal
 {
   wait(0.1, seconds);
   shootMotor.spin(forward);
-  shootMotor.setVelocity(speed, percent);
+  shootMotor.setVelocity(speedRPM, rpm);
   for (int i = 1; i<= numDiscs; i++)
   {
+    wait(0.2, seconds);
     triggerMotor.spin(forward);
     triggerMotor.setVelocity(40, percent);
     wait(0.75, seconds);
@@ -545,10 +546,12 @@ void shootHigh (int speed, int numDiscs) //shoot into the high goal
     wait(0.5, seconds);
     intakeMotor.stop();
 
-    wait(2, seconds); //was 2
+    wait(2.35, seconds); //was 2
   }
   shootMotor.stop();
 }
+
+
 
 int alignBlue() //auto align with goal (for auton)
 {
@@ -698,56 +701,9 @@ int alignRed() //auto align with red goal (for auton)
 //     printGuide(2);
 // }
 
-void dipIntoRoller(bool firstRoller = false) {
-  if (firstRoller) {
-    drivePID(-15, 15);
-  } else {
-    drivePID(-55, 15);
-  }
-  wait(.1, seconds);
-  intakeMotor.spin(forward);
-  intakeMotor.setVelocity(.8, percent);
-  intakeMotor.spinFor(1, seconds);
-  drivePID(50, 50);
-}
-
-void AS4RollerExpansion(void) {
-  //dip into roller
-  dipIntoRoller(true);
-
-  turnPID(90, 50);
-
-  //dip into roller
-  dipIntoRoller();
-
-  wait(.5, seconds);
-  turnPID(-45, 10);
-  drivePID(250, 60);
-  wait(.5, seconds);
-  turnPID(-135, 50);
-
-  //dip into roller
-  dipIntoRoller();
-
-  turnPID(-90, 40);
-
-  //dip into roller
-  dipIntoRoller();
-
-  wait(.5, seconds);
-  turnPID(45, 40);
-
-  //drop expansion
-  /*expansionMotor.spin(forward);
-  expansionMotor.setVelocity(40, percent);
-  wait(.6, seconds);
-  expansionMotor.stop();*/
-
-  drivePID(265, 90);
-}
-
 void pushLeft(void) //basic left auton that only does roller
 {
+  drivePID(-3, 5);
   intakeMotor.spin(forward);
   intakeMotor.setVelocity(40, percent);
   intakeMotor.spinFor(0.60, seconds); //roller, 0.85 best for comp
@@ -756,6 +712,11 @@ void pushLeft(void) //basic left auton that only does roller
 void senseRight(void) 
 //this one is like the main right auton that shoots into the high goal
 {
+  while (inertialSensor.isCalibrating()) 
+  {
+    wait(0.1, seconds);
+  }
+  inertialSensor.setRotation(0, degrees);
   drivePID(68, 40);
   shootMotor.spin(forward);
   shootMotor.setVelocity(73, percent);
@@ -763,7 +724,7 @@ void senseRight(void)
   drivePID(-7, 20);
 
   wait(0.25, seconds);
-
+//i love schenanigans
   intakeMotor.spin(forward);
   intakeMotor.setVelocity(20, percent);
   intakeMotor.spinFor(0.62, seconds); //roller, 0.85 best for comp
@@ -771,7 +732,7 @@ void senseRight(void)
   wait(0.25, seconds);
   stopDriving();
 
-  drivePID(3, 60);
+  drivePID(2, 5);
   // if (isRed)
   // {
   //   alignRed();
@@ -782,16 +743,22 @@ void senseRight(void)
   // {
   //   alignBlue();
   // }
-  turnPID(19, 15); 
+  turnPID(22, 15); 
   wait(1.7, seconds); //was 4
   // if (shootAuton)
   // {
-    shootHigh(73, 2);
+    shootHigh(0.76*200, 2);
   // }
   // if (!shootAuton)
   // {
   //   shootMotor.stop();
   // }
+  // wait(5, seconds);
+  // drivePID(30, 50);
+  // expansionMotor.spin(forward);
+  // expansionMotor.setVelocity(40, percent);
+  // wait(0.8, seconds);
+  // drivePID(200, 60);
 }
 
 void nonSenseRight() //right auton that shoots into the low goal
@@ -818,15 +785,15 @@ void autonomous(void) {
   // ..........................................................................
   // Insert autonomous user code here.
   // ..........................................................................
-  if (isSkills){
-    readyToPrint();
-    Brain.Screen.print("why isn't this working");
-    AS4RollerExpansion();
-  } else {
-    pushLeft();
+// senseRight();
+shootMotor.spin(forward);
+shootMotor.setVelocity(50, percent);
+
+
+
+
 // alignRed();
 // topRight.spin(forward, 30, percent);
-  }
   
 }
 
@@ -877,27 +844,37 @@ void shoot(void)
   {
     coef = -1;
   }
+  shootMotor.resetPosition();
+  double veloError;
   while(Controller1.ButtonR2.pressing())
   {
     shootMotor.spin(forward);
     if (normalSpeed)
     {
-      shootMotor.setVelocity(62, percent);
+      veloError = (124 - shootMotor.velocity(rpm))/124;
+      // shootMotor.setVelocity(0.62*200, rpm); //old/control w more oscillation
+      readyToPrint();
+      Brain.Screen.print(veloError*100);
+      shootMotor.setVelocity(shootMotor.velocity(percent) + 10*veloError, percent); 
+      //originally 10 can change
     }
     if (!normalSpeed)
     {
-      shootMotor.setVelocity(55, percent);
+      veloError = (110 - shootMotor.velocity(rpm))/110;
+      // shootMotor.setVelocity(110, rpm); //old/control w more oscillation
+      readyToPrint();
+      Brain.Screen.print(veloError*100);
+      shootMotor.setVelocity(shootMotor.velocity(percent) + 10*veloError, percent); 
+      //originally 10 can change
     }
-    readyToPrint();
-    Brain.Screen.print("shoot");
+    // readyToPrint();
+    // Brain.Screen.print("shoot");
     wait(20, msec);
   }
-  readyToPrint();
-  Brain.Screen.print("stop shoot");
+  // readyToPrint();
+  // Brain.Screen.print("stop shoot");
   shootMotor.stop();
 }
-
-
 
 void triggerBack(void)
 {
@@ -947,18 +924,19 @@ void expandForward(void)
 {
     readyToPrint();
     Brain.Screen.print("expand forward");
-    while(Controller1.ButtonY.pressing())
+    while(Controller1.ButtonA.pressing())
     {
     expansionMotor.spin(forward);
     expansionMotor.setVelocity(40, percent);
     wait(20, msec);
     }
     expansionMotor.stop();
-
   }
 
 void usercontrol(void) {
   // User control code here, inside the loop
+  // shootMotor.setVelocity(30, percent);
+  // shootMotor.spin(forward);
   myTimer.clear();
   Controller1.Screen.clearScreen(); 
   enableTurnPID = false;
@@ -986,10 +964,10 @@ void usercontrol(void) {
     Controller1.ButtonL1.pressed(intakeForward);
     Controller1.ButtonL2.pressed(intakeBackward);
 
-    Controller1.ButtonY.pressed(expandForward);
+    Controller1.ButtonA.pressed(expandForward);
     
-    Controller1.ButtonY.pressed(shootOut);
-    Controller1.ButtonA.pressed(shootIn);
+    // Controller1.ButtonY.pressed(shootOut);
+    // Controller1.ButtonA.pressed(shootIn);
 
     Controller1.ButtonUp.pressed(speedUp);
     Controller1.ButtonDown.pressed(speedDown);
