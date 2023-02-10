@@ -701,6 +701,54 @@ int alignRed() //auto align with red goal (for auton)
 //     printGuide(2);
 // }
 
+void dipIntoRoller(bool firstRoller = false) {
+  if (firstRoller) {
+    drivePID(-15, 15);
+  } else {
+    drivePID(-55, 15);
+  }
+  wait(.1, seconds);
+  intakeMotor.spin(forward);
+  intakeMotor.setVelocity(.8, percent);
+  intakeMotor.spinFor(1, seconds);
+  drivePID(50, 50);
+}
+
+void AS4RollerExpansion(void) {
+  //dip into roller
+  dipIntoRoller(true);
+
+  turnPID(90, 50);
+
+  //dip into roller
+  dipIntoRoller();
+
+  wait(.5, seconds);
+  turnPID(-45, 10);
+  drivePID(250, 60);
+  wait(.5, seconds);
+  turnPID(-135, 50);
+
+  //dip into roller
+  dipIntoRoller();
+
+  turnPID(-90, 40);
+
+  //dip into roller
+  dipIntoRoller();
+
+  wait(.5, seconds);
+  turnPID(45, 40);
+
+  //drop expansion
+  /*expansionMotor.spin(forward);
+  expansionMotor.setVelocity(40, percent);
+  wait(.6, seconds);
+  expansionMotor.stop();*/
+
+  drivePID(265, 90);
+}
+
 void pushLeft(void) //basic left auton that only does roller
 {
   drivePID(-3, 5);
