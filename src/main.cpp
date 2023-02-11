@@ -702,6 +702,27 @@ int alignRed() //auto align with red goal (for auton)
 //     printGuide(2);
 // }
 
+task shootStabilized(double secondsTimer) {
+  shootMotor.resetPosition();
+  double veloError;
+  double shootSpeed = normalSpeed ? 124 : 110;
+
+  vex::timer myTimer;
+  myTimer.clear();
+
+  while(secondsTimer > myTimer.value()) {
+    shootMotor.spin(forward);
+    veloError = (shootSpeed - shootMotor.velocity(rpm))/shootSpeed; 
+    readyToPrint();
+    Brain.Screen.print(veloError*100);
+    shootMotor.setVelocity(shootMotor.velocity(percent) + 10*veloError, percent); 
+
+    wait(20, msec);
+  }
+  shootMotor.stop();
+  return vex::task();
+}
+
 void dipIntoRoller(bool firstRoller = false) {
   if (firstRoller) {
     drivePID(-5, 5);
@@ -831,6 +852,19 @@ void nonSenseRight() //right auton that shoots into the low goal
   shootLow(50, 2);
 }
 
+void testShooting() {
+  vex::task(shootStabilized(6));
+  wait(2, seconds);
+  
+  triggerMotor.spin(forward);
+  triggerMotor.setVelocity(40, percent);
+
+  for (int i = 0; i < 3; i++) {
+      wait(1, seconds);
+      triggerMotor.spinFor(1, seconds);
+  }
+}
+
 void autonomous(void) {
   // ..........................................................................
   // Insert autonomous user code here.
@@ -842,6 +876,9 @@ void autonomous(void) {
     shootMotor.spin(forward);
     shootMotor.setVelocity(50, percent);
   }
+
+  //rpm testing line:
+  //testShooting();
 
 // alignRed();
 // topRight.spin(forward, 30, percent);
@@ -890,9 +927,7 @@ void shoot(void)
   if (shooterOutward)
   {
     coef = 1;
-  }
-  if (!shooterOutward)
-  {
+  } else {
     coef = -1;
   }
   shootMotor.resetPosition();
@@ -902,15 +937,13 @@ void shoot(void)
     shootMotor.spin(forward);
     if (normalSpeed)
     {
-      veloError = (124 - shootMotor.velocity(rpm))/124;
+      veloError = (124 - shootMotor.velocity(rpm))/124; 
       // shootMotor.setVelocity(0.62*200, rpm); //old/control w more oscillation
       readyToPrint();
       Brain.Screen.print(veloError*100);
       shootMotor.setVelocity(shootMotor.velocity(percent) + 10*veloError, percent); 
       //originally 10 can change
-    }
-    if (!normalSpeed)
-    {
+    } else {
       veloError = (110 - shootMotor.velocity(rpm))/110;
       // shootMotor.setVelocity(110, rpm); //old/control w more oscillation
       readyToPrint();
