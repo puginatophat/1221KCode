@@ -34,6 +34,7 @@ bool shooterOutward = true;
 bool isRed = true;
 bool normalSpeed = true;
 bool shootAuton = true;
+bool isSkills = true;
 
 // define your global instances of motors and other devices here
 
@@ -447,7 +448,7 @@ int drivePID(int cm, int startVelocity)
     {
       if (abs(averagePosition)*0.08866 < 50)
       {
-        driveError = 100;
+        driveError = startVelocity;
       }
       else
       {
@@ -703,18 +704,20 @@ int alignRed() //auto align with red goal (for auton)
 
 void dipIntoRoller(bool firstRoller = false) {
   if (firstRoller) {
-    drivePID(-15, 15);
+    drivePID(-5, 5);
   } else {
-    drivePID(-55, 15);
+    drivePID(-55, 5);
   }
   wait(.1, seconds);
   intakeMotor.spin(forward);
-  intakeMotor.setVelocity(.8, percent);
+  intakeMotor.setVelocity(80, percent);
   intakeMotor.spinFor(1, seconds);
   drivePID(50, 50);
 }
 
 void AS4RollerExpansion(void) {
+  strafe(1, 2, 5);
+
   //dip into roller
   dipIntoRoller(true);
 
@@ -724,7 +727,7 @@ void AS4RollerExpansion(void) {
   dipIntoRoller();
 
   wait(.5, seconds);
-  turnPID(-45, 10);
+  turnPID(-45, 5);
   drivePID(250, 60);
   wait(.5, seconds);
   turnPID(-135, 50);
@@ -742,9 +745,8 @@ void AS4RollerExpansion(void) {
 
   //drop expansion
   /*expansionMotor.spin(forward);
-  expansionMotor.setVelocity(40, percent);
-  wait(.6, seconds);
-  expansionMotor.stop();*/
+  expansionMotor.setVelocity(50, percent);
+  expansionMotor.spinFor(.5, seconds);*/
 
   drivePID(265, 90);
 }
@@ -833,12 +835,13 @@ void autonomous(void) {
   // ..........................................................................
   // Insert autonomous user code here.
   // ..........................................................................
-// senseRight();
-shootMotor.spin(forward);
-shootMotor.setVelocity(50, percent);
-
-
-
+  if (isSkills) {
+    AS4RollerExpansion();
+  } else {
+    // senseRight();
+    shootMotor.spin(forward);
+    shootMotor.setVelocity(50, percent);
+  }
 
 // alignRed();
 // topRight.spin(forward, 30, percent);
