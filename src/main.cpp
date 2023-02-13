@@ -870,7 +870,7 @@ void autonomous(void) {
   // Insert autonomous user code here.
   // ..........................................................................
   if (isSkills) {
-    AS4RollerExpansion();
+    //AS4RollerExpansion();
   } else {
     // senseRight();
     shootMotor.spin(forward);
@@ -878,7 +878,7 @@ void autonomous(void) {
   }
 
   //rpm testing line:
-  //testShooting();
+  testShooting();
 
 // alignRed();
 // topRight.spin(forward, 30, percent);
