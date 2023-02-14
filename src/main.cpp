@@ -727,49 +727,69 @@ void dipIntoRoller(bool firstRoller = false) {
   if (firstRoller) {
     drivePID(-5, 5);
   } else {
-    drivePID(-55, 5);
+    drivePID(-55, 10);
   }
   wait(.1, seconds);
   intakeMotor.spin(forward);
-  intakeMotor.setVelocity(80, percent);
-  intakeMotor.spinFor(1, seconds);
+  intakeMotor.setVelocity(60, percent);
+  intakeMotor.spinFor(.4, seconds);
   drivePID(50, 50);
 }
 
 void AS4RollerExpansion(void) {
-  strafe(1, 2, 5);
+  double accountForDisk = 5;
+  bool playingItSafe = true;
+  bool takingShots = true;
+
+  strafe(-1, 2, 5);
 
   //dip into roller
   dipIntoRoller(true);
 
   turnPID(90, 50);
+  if (takingShots) {
+      shootMotor.spin(forward);
+      shootMotor.setVelocity(71, percent);
+  }
 
   //dip into roller
   dipIntoRoller();
 
   wait(.5, seconds);
-  turnPID(-45, 5);
-  drivePID(250, 60);
-  wait(.5, seconds);
-  turnPID(-135, 50);
+  if (takingShots) {
+    turnPID(12.5, 5);
+    wait(.125, seconds);
+    shootHigh(0.71*200, 2);
+    turnPID(-60, 5);
+  } else {
+    turnPID(-45, 5);
+  }
 
-  //dip into roller
-  dipIntoRoller();
+  //either 2 rollers + expansion (true) or 4 rollers + expansion (false)
+  if (!playingItSafe) {
+    drivePID(250 + accountForDisk, 60);
+    wait(.5, seconds);
+    turnPID(-135, 50);
 
-  turnPID(-90, 40);
+    //dip into roller
+    dipIntoRoller();
+    shootHigh(0.72*200, 2);
+    turnPID(-90, 40);
 
-  //dip into roller
-  dipIntoRoller();
+    //dip into roller
+    dipIntoRoller();
 
-  wait(.5, seconds);
-  turnPID(45, 40);
+    wait(.5, seconds);
+    turnPID(45, 40);
+  }
 
   //drop expansion
-  /*expansionMotor.spin(forward);
+  expansionMotor.spin(forward);
   expansionMotor.setVelocity(50, percent);
-  expansionMotor.spinFor(.5, seconds);*/
+  expansionMotor.spinFor(.5, seconds);
+  wait(2, seconds);
 
-  drivePID(265, 90);
+  drivePID(280, 90);
 }
 
 void pushLeft(void) //basic left auton that only does roller
@@ -870,7 +890,7 @@ void autonomous(void) {
   // Insert autonomous user code here.
   // ..........................................................................
   if (isSkills) {
-    //AS4RollerExpansion();
+    AS4RollerExpansion();
   } else {
     // senseRight();
     shootMotor.spin(forward);
@@ -878,7 +898,7 @@ void autonomous(void) {
   }
 
   //rpm testing line:
-  testShooting();
+  //testShooting();
 
 // alignRed();
 // topRight.spin(forward, 30, percent);
