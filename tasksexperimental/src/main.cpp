@@ -736,9 +736,7 @@ void shoot(void)
   }
   // readyToPrint();
   // Brain.Screen.print("stop shoot");
-  shootMotor.stop();
-  shootMotor.setVelocity(20, percent);
-  shootMotor.spinFor(reverse, 2, seconds);
+  shootMotor.stop(brake);
 }
 
 void shootBack()
