@@ -34,6 +34,9 @@ bool normalSpeed = true;
 bool shootAuton = true;
 bool isSkills = true;
 
+//disregard these (SAS stands for StablilizedShotAuton), default values will be updated
+double SSArpm = 200, SSAtime = 2;
+
 // define your global instances of motors and other devices here
 
 /*---------------------------------------------------------------------------*/
@@ -461,14 +464,14 @@ void shootLow(int speed, int numDiscs) //shoot into the low goal
 vex::timer myTimer;
 int stableSpinAuton()
 {
-  float velocityRPM = 146;
-  float time = 15;
+  //SSArpm = 146;
+  //SSAtime = 15;
   myTimer.clear();
   shootMotor.spin(forward);
   float autonVeloError;
-  while(myTimer.time(seconds) < time)
+  while(myTimer.time(seconds) < SSAtime)
   {
-    autonVeloError = (velocityRPM - shootMotor.velocity(rpm))/velocityRPM;
+    autonVeloError = (SSArpm - shootMotor.velocity(rpm))/SSArpm;
     // shootMotor.setVelocity(0.62*200, rpm); //old/control w more oscillation
     readyToPrint();
     Brain.Screen.print(autonVeloError*100);
@@ -477,6 +480,13 @@ int stableSpinAuton()
     wait(20, msec);
   }
   shootMotor.stop();
+  return 0;
+}
+
+int stableSpinAuton(double setRpm, double setTime) {
+  SSArpm = setRpm;
+  SSAtime = setTime;
+  task stableShootTask = task(stableSpinAuton);
   return 0;
 }
 
@@ -565,12 +575,13 @@ void AS4RollerExpansion(void) {
   }
 
   //drop expansion
+  drivePID(70, 5);
   expansionMotor.spin(forward);
   expansionMotor.setVelocity(50, percent);
   expansionMotor.spinFor(.5, seconds);
   wait(2, seconds);
 
-  drivePID(280, 90);
+  drivePID(275, 90);
 }
 
 void pushLeft(void) //basic left auton that only does roller

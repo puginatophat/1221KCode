@@ -737,7 +737,7 @@ void dipIntoRoller(bool firstRoller = false) {
 }
 
 void AS4RollerExpansion(void) {
-  double accountForDisk = 5;
+  double shootPercentage = .72;
   bool playingItSafe = true;
   bool takingShots = true;
 
@@ -749,7 +749,7 @@ void AS4RollerExpansion(void) {
   turnPID(90, 50);
   if (takingShots) {
       shootMotor.spin(forward);
-      shootMotor.setVelocity(71, percent);
+      shootMotor.setVelocity(shootPercentage * 100, percent);
   }
 
   //dip into roller
@@ -759,7 +759,7 @@ void AS4RollerExpansion(void) {
   if (takingShots) {
     turnPID(12.5, 5);
     wait(.125, seconds);
-    shootHigh(0.71*200, 2);
+    shootHigh(shootPercentage * 200, 2);
     turnPID(-60, 5);
   } else {
     turnPID(-45, 5);
@@ -767,7 +767,7 @@ void AS4RollerExpansion(void) {
 
   //either 2 rollers + expansion (true) or 4 rollers + expansion (false)
   if (!playingItSafe) {
-    drivePID(250 + accountForDisk, 60);
+    drivePID(250, 60);
     wait(.5, seconds);
     turnPID(-135, 50);
 
