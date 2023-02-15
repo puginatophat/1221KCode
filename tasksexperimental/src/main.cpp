@@ -32,7 +32,7 @@ competition Competition;
 bool shooterOutward = true;
 bool normalSpeed = true;
 bool shootAuton = true;
-bool isSkills = true;
+bool isSkills = false;
 
 //disregard these (SAS stands for StablilizedShotAuton), default values will be updated
 double SSArpm = 200, SSAtime = 2;
@@ -614,7 +614,7 @@ int senseRight(void)
   stopDriving();
 
   drivePID(2, 5);
-  turnPID(22, 15); 
+  turnPID(20, 15); 
   wait(1.7, seconds); 
   shootHigh(0.76*200, 2);
   return 0;
@@ -622,15 +622,15 @@ int senseRight(void)
 
 void newAuton(void)
 {
-task senseRightTask = task(senseRight);
-wait(3, seconds);
-task stableShootTask = task(stableSpinAuton);
+  task senseRightTask = task(senseRight);
+  wait(1.5, seconds);
+  stableSpinAuton(153, 15);
 }
 
 void nonSenseRight() //right auton that shoots into the low goal
 {
   turnPID(90, 80);
-  drivePID(62, 60);
+  drivePID(62, 70);
   turnPID(-90, 80);
   drivePID(-7, 20);
 
@@ -655,7 +655,7 @@ void autonomous(void) {
   if (isSkills) {
     AS4RollerExpansion();
   } else {
-    // newAuton();
+    newAuton();
   }
   
 }
