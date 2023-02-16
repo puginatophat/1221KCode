@@ -514,7 +514,7 @@ void shootHigh (int speedRPM, int numDiscs) //shoot into the high goal
   // shootMotor.stop();
 }
 
-void dipIntoRoller(bool firstRoller = false) {
+void dipIntoRoller(bool firstRoller = false, bool goForDisk = false) {
   if (firstRoller) {
     drivePID(-5, 5);
   } else {
@@ -524,23 +524,31 @@ void dipIntoRoller(bool firstRoller = false) {
   intakeMotor.spin(forward);
   intakeMotor.setVelocity(60, percent);
   intakeMotor.spinFor(.4, seconds);
-  drivePID(50, 50);
+  if (goForDisk) {
+    drivePID(15, 5);
+    strafe(-1, 5, 5);
+    intakeMotor.setVelocity(60, percent);
+    drivePID(35, 10);
+    wait(2, seconds);
+    intakeMotor.stop();
+  } else {
+    drivePID(50, 50);
+  }
 }
 
 void AS4RollerExpansion(void) {
-  double accountForDisk = 5;
+  int intendedNumDisks = 3;
   bool playingItSafe = true;
   bool takingShots = true;
 
   strafe(-1, 2, 5);
 
   //dip into roller
-  dipIntoRoller(true);
+  dipIntoRoller(true, intendedNumDisks > 2);
 
   turnPID(90, 50);
   if (takingShots) {
-      shootMotor.spin(forward);
-      shootMotor.setVelocity(71, percent);
+      stableSpinAuton(136, 10 + intendedNumDisks * 5);
   }
 
   //dip into roller
@@ -550,7 +558,7 @@ void AS4RollerExpansion(void) {
   if (takingShots) {
     turnPID(12.5, 5);
     wait(.125, seconds);
-    shootHigh(0.71*200, 2);
+    shootHigh(136, intendedNumDisks);
     turnPID(-60, 5);
   } else {
     turnPID(-45, 5);
@@ -558,13 +566,13 @@ void AS4RollerExpansion(void) {
 
   //either 2 rollers + expansion (true) or 4 rollers + expansion (false)
   if (!playingItSafe) {
-    drivePID(250 + accountForDisk, 60);
+    drivePID(250, 60);
     wait(.5, seconds);
     turnPID(-135, 50);
 
     //dip into roller
     dipIntoRoller();
-    shootHigh(0.72*200, 2);
+    shootHigh(0.72*200, intendedNumDisks);
     turnPID(-90, 40);
 
     //dip into roller
