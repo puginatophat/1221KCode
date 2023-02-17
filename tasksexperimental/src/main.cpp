@@ -32,7 +32,7 @@ competition Competition;
 bool shooterOutward = true;
 bool normalSpeed = true;
 bool shootAuton = true;
-bool isSkills = false;
+bool isSkills = true;
 
 //disregard these (SAS stands for StablilizedShotAuton), default values will be updated
 double SSArpm = 200, SSAtime = 2;
@@ -514,6 +514,7 @@ void shootHigh (int speedRPM, int numDiscs) //shoot into the high goal
   // shootMotor.stop();
 }
 
+//never used (integrated manually)
 void dipIntoRoller(bool firstRoller = false, bool goForDisk = false) {
   if (firstRoller) {
     drivePID(-5, 5);
@@ -524,42 +525,62 @@ void dipIntoRoller(bool firstRoller = false, bool goForDisk = false) {
   intakeMotor.spin(forward);
   intakeMotor.setVelocity(60, percent);
   intakeMotor.spinFor(.4, seconds);
-  if (goForDisk) {
-    drivePID(15, 5);
-    strafe(-1, 5, 5);
-    intakeMotor.setVelocity(60, percent);
-    drivePID(35, 10);
-    wait(2, seconds);
-    intakeMotor.stop();
-  } else {
-    drivePID(50, 50);
+  if (firstRoller) {
+    drivePID(5, 5);
+    strafe(-1, 5, 10);
+    if (goForDisk) {
+      intakeMotor.setVelocity(60, percent);
+      drivePID(40, 10);
+      wait(1, seconds);
+      intakeMotor.stop();
+      return;
+    }
   }
+  drivePID(40, 10);
 }
 
 void AS4RollerExpansion(void) {
-  int intendedNumDisks = 3;
+  int intendedNumDisks = 2;
   bool playingItSafe = true;
   bool takingShots = true;
 
-  strafe(-1, 2, 5);
+  strafe(-1, 3, 15);
+  turnPID(-5, 5); //<-- corrects strafe angle
 
   //dip into roller
-  dipIntoRoller(true, intendedNumDisks > 2);
+  drivePID(-5, 5);
+  wait(.1, seconds);
+  intakeMotor.spin(forward);
+  intakeMotor.setVelocity(65, percent);
+  intakeMotor.spinFor(.45, seconds);
+  /*if (intendedNumDisks > 2) {
+    intakeMotor.setVelocity(60, percent);
+    drivePID(40, 10);
+    wait(1, seconds);
+    intakeMotor.stop();
+  }*/
+  drivePID(50, 10);
 
-  turnPID(90, 50);
+  turnPID(94, 50);
+
+  //dip into roller
+  drivePID(-45, 10);
+  wait(.1, seconds);
+  intakeMotor.spin(forward);
+  intakeMotor.setVelocity(65, percent);
+  intakeMotor.spinFor(.45, seconds);
   if (takingShots) {
-      stableSpinAuton(136, 10 + intendedNumDisks * 5);
+    stableSpinAuton(140, 5 + intendedNumDisks * 5);
   }
+  drivePID(40, 10);
 
-  //dip into roller
-  dipIntoRoller();
-
+  //shooting
   wait(.5, seconds);
   if (takingShots) {
-    turnPID(12.5, 5);
+    turnPID(19, 5);
     wait(.125, seconds);
-    shootHigh(136, intendedNumDisks);
-    turnPID(-60, 5);
+    shootHigh(140, intendedNumDisks);
+    turnPID(-65, 5);
   } else {
     turnPID(-45, 5);
   }
@@ -583,13 +604,13 @@ void AS4RollerExpansion(void) {
   }
 
   //drop expansion
-  drivePID(70, 5);
+  drivePID(10, 5);
   expansionMotor.spin(forward);
   expansionMotor.setVelocity(50, percent);
   expansionMotor.spinFor(.5, seconds);
   wait(2, seconds);
 
-  drivePID(275, 90);
+  drivePID(315, 90);
 }
 
 void pushLeft(void) //basic left auton that only does roller
@@ -769,6 +790,18 @@ void triggerBack(void)
   triggerMotor.stop();
 }
 
+void triggerForward(void)
+{
+  triggerMotor.setPosition(0, degrees);
+  triggerMotor.spin(forward);
+  triggerMotor.setVelocity(-40, percent);
+  while(Controller1.ButtonB.pressing())
+  {
+    wait(20, msec);
+  }
+  triggerMotor.stop();
+}
+
 void intakeForward(void)
 {
   while(Controller1.ButtonL1.pressing())
@@ -829,6 +862,7 @@ void usercontrol(void) {
 
     Controller1.ButtonR2.pressed(shoot);
     Controller1.ButtonR1.pressed(triggerBack);
+    Controller1.ButtonB.pressed(triggerForward);
 
     Controller1.ButtonL1.pressed(intakeForward);
     Controller1.ButtonL2.pressed(intakeBackward);
