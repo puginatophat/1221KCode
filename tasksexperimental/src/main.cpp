@@ -186,8 +186,8 @@ void strafe (int direction, int velocity, float cm) //doesnt work well in auton 
 
   topLeft.setVelocity(velocity, percent);
   topRight.setVelocity(velocity, percent);
-  bottomLeft.setVelocity(velocity, percent);
-  bottomRight.setVelocity(velocity, percent);
+  bottomLeft.setVelocity(velocity*0.5, percent);
+  bottomRight.setVelocity(velocity*0.5, percent);
 }
 
 void forward_backward (int direction, int velocity, float cm)
@@ -882,19 +882,30 @@ void usercontrol(void) {
     int topRightV;
     int bottomLeftV;
     int bottomRightV;
-    topLeftV = Controller1.Axis4.value() + Controller1.Axis3.value() + 
-    0.5*Controller1.Axis1.value();
-    topRightV = -1*Controller1.Axis4.value() + Controller1.Axis3.value() + 
-    -0.5*Controller1.Axis1.value();
-    bottomLeftV = -1*Controller1.Axis4.value() + Controller1.Axis3.value() + 
-    0.5*Controller1.Axis1.value();
-    bottomRightV = Controller1.Axis4.value() + Controller1.Axis3.value() + 
-    -0.5*Controller1.Axis1.value();
+
+    if (abs(Controller1.Axis4.value()) >= 60)
+    {
+      topLeftV = Controller1.Axis4.position();
+      topRightV = -1*Controller1.Axis4.position();
+      bottomLeftV = -0.5*Controller1.Axis4.position();
+      bottomRightV = 0.5*Controller1.Axis4.position();
+    }
+    else
+    {
+      topLeftV = Controller1.Axis4.value() + Controller1.Axis3.value() + 
+      0.5*Controller1.Axis1.value();
+      topRightV = -1*Controller1.Axis4.value() + Controller1.Axis3.value() + 
+      -0.5*Controller1.Axis1.value();
+      bottomLeftV = -1*Controller1.Axis4.value() + Controller1.Axis3.value() + 
+      0.5*Controller1.Axis1.value();
+      bottomRightV = Controller1.Axis4.value() + Controller1.Axis3.value() + 
+      -0.5*Controller1.Axis1.value(); 
+    }   
 
     topLeft.setVelocity(topLeftV, percent);
     topRight.setVelocity(topRightV, percent);
     bottomLeft.setVelocity(bottomLeftV, percent);
-    bottomRight.setVelocity(bottomRightV, percent);                                                                                                                                                                                                                                                                                                                                                                                   
+    bottomRight.setVelocity(bottomRightV, percent);                                                                                                                                                                                                                                                                                                                                                                            
 
     // This is the main execution loop for the user control program.
     // Each time through the loop your program should update motor + servo
