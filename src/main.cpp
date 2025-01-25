@@ -27,6 +27,8 @@
 
 using namespace vex;
 
+vex::inertial inertialSensor = vex::inertial(vex::PORT20);
+
 // A global instance of competition
 competition Competition;
 int competitionMode = 2; //CHANGE THIS IF ITS RIGHT OR LEFT!!!!!!!!!
@@ -63,28 +65,6 @@ void printToController()
   Controller1.Screen.clearLine(2);
   Controller1.Screen.setCursor(2, 1);
 }
-
-// void printGuide(int mode)
-// {
-//   Controller1.Screen.clearLine(1);
-//   Controller1.Screen.setCursor(1, 1);
-//   if (mode == 0) //left
-//   {
-//     Controller1.Screen.print("<   ");
-//   }
-//   if (mode == 1) //right
-//   {
-//     Controller1.Screen.print(">   ");
-//   }
-//   if (mode == 2) //aligned
-//   {
-//     Controller1.Screen.print("GOOD");
-//   }
-//   if (mode == 3) //not there
-//   {
-//     Controller1.Screen.print("NONE");
-//   }
-// }
 
 //NOTE: the pre auton calibration only works if you use the competition switch correctly
 //1. before running program, put switch on autonomous, disable. 
@@ -123,8 +103,8 @@ void pre_auton(void)
 void stopDriving()
 {
   topLeft.stop();
-  topRight.stop();
   bottomLeft.stop();
+  topRight.stop();
   bottomRight.stop();
 }
 
@@ -142,11 +122,11 @@ void driveTurnRight (int velocity, float turnDegrees)
   bottomLeft.spin(forward);
   bottomRight.spin(reverse);
 
-  while (inertialSensor.rotation(degrees) < turnDegrees)
-  {
-    // Brain.Screen.print(inertialSensor.rotation(degrees)/turnDegrees);
-    // readyToPrint();
-  }
+  // while (inertialSensor.rotation(degrees) < turnDegrees)
+  // {
+  //   // Brain.Screen.print(inertialSensor.rotation(degrees)/turnDegrees);
+  //   // readyToPrint();
+  // }
   stopDriving();
 }
 
@@ -173,166 +153,166 @@ void driveTurnLeft (int velocity, float turnDegrees)
   stopDriving();
 }
 
-//********direction is -1 for backward and 1 for forward************
-void strafe (int direction, int velocity, float cm) //doesnt work well in auton bc of gearing issues- it drifts diagonally
-{
-  float degreesNum = cm/0.08222; 
+// //********direction is -1 for backward and 1 for forward************
+// void strafe (int direction, int velocity, float cm) //doesnt work well in auton bc of gearing issues- it drifts diagonally
+// {
+//   float degreesNum = cm/0.08222; 
 
-  topLeft.spinFor(forward, direction*degreesNum, degrees, false);
-  topRight.spinFor(forward, direction*-1*degreesNum, degrees, false);
-  bottomLeft.spinFor(forward, direction*-1*degreesNum, degrees, false);
-  bottomRight.spinFor(forward, direction*degreesNum, degrees, true);
+//   topLeft.spinFor(forward, direction*degreesNum, degrees, false);
+//   topRight.spinFor(forward, direction*-1*degreesNum, degrees, false);
+//   bottomLeft.spinFor(forward, direction*-1*degreesNum, degrees, false);
+//   bottomRight.spinFor(forward, direction*degreesNum, degrees, true);
 
-  topLeft.setVelocity(velocity, percent);
-  topRight.setVelocity(velocity, percent);
-  bottomLeft.setVelocity(velocity, percent);
-  bottomRight.setVelocity(velocity, percent);
-}
+//   topLeft.setVelocity(velocity, percent);
+//   topRight.setVelocity(velocity, percent);
+//   bottomLeft.setVelocity(velocity, percent);
+//   bottomRight.setVelocity(velocity, percent);
+// }
 
-void forward_backward (int direction, int velocity, float cm)
-{
-  float degreesNum = cm/0.08866;
-  topLeft.setVelocity(velocity, percent);
-  topRight.setVelocity(velocity, percent);
-  bottomLeft.setVelocity(velocity, percent);
-  bottomRight.setVelocity(velocity, percent);
+// void forward_backward (int direction, int velocity, float cm)
+// {
+//   float degreesNum = cm/0.08866;
+//   topLeft.setVelocity(velocity, percent);
+//   topRight.setVelocity(velocity, percent);
+//   bottomLeft.setVelocity(velocity, percent);
+//   bottomRight.setVelocity(velocity, percent);
 
-  topLeft.spinFor(forward, direction*degreesNum, degrees, false);
-  topRight.spinFor(forward, direction*degreesNum, degrees, false);
-  bottomLeft.spinFor(forward, direction*degreesNum, degrees, false);
-  bottomRight.spinFor(forward, direction*degreesNum, degrees, false);
+//   topLeft.spinFor(forward, direction*degreesNum, degrees, false);
+//   topRight.spinFor(forward, direction*degreesNum, degrees, false);
+//   bottomLeft.spinFor(forward, direction*degreesNum, degrees, false);
+//   bottomRight.spinFor(forward, direction*degreesNum, degrees, false);
 
-  Brain.Screen.print(degreesNum);
-}
+//   Brain.Screen.print(degreesNum);
+// }
 
-void intakeAuton (int velocity, float cm) //does intake while driving _ cm
-{   
-  readyToPrint();
-  Brain.Screen.print("start");
+// void intakeAuton (int velocity, float cm) //does intake while driving _ cm
+// {   
+//   readyToPrint();
+//   Brain.Screen.print("start");
 
-  topLeft.resetPosition();
-  topRight.resetPosition();
-  bottomLeft.resetPosition();
-  bottomRight.resetPosition();
+//   topLeft.resetPosition();
+//   topRight.resetPosition();
+//   bottomLeft.resetPosition();
+//   bottomRight.resetPosition();
 
-  topLeft.spin(forward);
-  topRight.spin(forward);
-  bottomLeft.spin(forward);
-  bottomRight.spin(forward);
-  intakeMotor.spin(forward);
+//   topLeft.spin(forward);
+//   topRight.spin(forward);
+//   bottomLeft.spin(forward);
+//   bottomRight.spin(forward);
+//   intakeMotor.spin(forward);
 
-  float degreesNum = cm/0.08866;
-  topLeft.setVelocity(velocity, percent);
-  topRight.setVelocity(velocity, percent);
-  bottomLeft.setVelocity(velocity, percent);
-  bottomRight.setVelocity(velocity, percent);
-  intakeMotor.setVelocity(80, percent);
+//   float degreesNum = cm/0.08866;
+//   topLeft.setVelocity(velocity, percent);
+//   topRight.setVelocity(velocity, percent);
+//   bottomLeft.setVelocity(velocity, percent);
+//   bottomRight.setVelocity(velocity, percent);
+//   intakeMotor.setVelocity(80, percent);
 
-  while (true)
-  {
-    int avg = (topLeft.position(degrees)+topRight.position(degrees)+bottomRight.position(degrees)+bottomLeft.position(degrees))/4;
-    readyToPrint();
-    Brain.Screen.print("avg");
-    if (avg >= degreesNum)
-    {
-      break;
-    }
-    wait(20, msec);
-  }
-  stopDriving();
-  intakeMotor.stop();
-  readyToPrint();
-  Brain.Screen.print("intake done");
-}
+//   while (true)
+//   {
+//     int avg = (topLeft.position(degrees)+topRight.position(degrees)+bottomRight.position(degrees)+bottomLeft.position(degrees))/4;
+//     readyToPrint();
+//     Brain.Screen.print("avg");
+//     if (avg >= degreesNum)
+//     {
+//       break;
+//     }
+//     wait(20, msec);
+//   }
+//   stopDriving();
+//   intakeMotor.stop();
+//   readyToPrint();
+//   Brain.Screen.print("intake done");
+// }
 
-int intakeError; // sensor value - desired value : position
-int intakePrevError = 0; //position 20 milliseconds ago
+// int intakeError; // sensor value - desired value : position
+// int intakePrevError = 0; //position 20 milliseconds ago
 double fiftyDegrees = 50/0.08866;
 
-int intakePID(float cm)
-{
-  topLeft.setPosition(0, degrees);
-  bottomLeft.setPosition(0, degrees);
-  topRight.setPosition(0, degrees);
-  bottomRight.setPosition(0, degrees);
+// int intakePID(float cm)
+// {
+//   topLeft.setPosition(0, degrees);
+//   bottomLeft.setPosition(0, degrees);
+//   topRight.setPosition(0, degrees);
+//   bottomRight.setPosition(0, degrees);
 
-  int desiredDrive = cm/0.08866;
-  bool over50 = false;
-  if (abs(cm) > 50)
-  {
-    over50 = true;
-  }
+//   int desiredDrive = cm/0.08866;
+//   bool over50 = false;
+//   if (abs(cm) > 50)
+//   {
+//     over50 = true;
+//   }
 
-  topLeft.spin(forward);
-  topRight.spin(forward);
-  bottomLeft.spin(forward);
-  bottomRight.spin(forward);
-  intakeMotor.spin(forward);
+//   topLeft.spin(forward);
+//   topRight.spin(forward);
+//   bottomLeft.spin(forward);
+//   bottomRight.spin(forward);
+//   intakeMotor.spin(forward);
 
-  int coef = 0;
-  if (cm >= 0)
-  {
-    coef = 1;
-  }
-  if (cm <= 0)
-  {
-    coef = -1;
-  }
+//   int coef = 0;
+//   if (cm >= 0)
+//   {
+//     coef = 1;
+//   }
+//   if (cm <= 0)
+//   {
+//     coef = -1;
+//   }
 
-  int averagePosition = 0;
-  int subtractFromPosition  = (abs(cm)-50)/0.08866;
-  while (abs(averagePosition) <= abs(desiredDrive))
-  {
-    averagePosition = (topLeft.position(degrees) + bottomLeft.position(degrees) 
-    + topRight.position(degrees) + bottomRight.position(degrees))/4;
+//   int averagePosition = 0;
+//   int subtractFromPosition  = (abs(cm)-50)/0.08866;
+//   while (abs(averagePosition) <= abs(desiredDrive))
+//   {
+//     averagePosition = (topLeft.position(degrees) + bottomLeft.position(degrees) 
+//     + topRight.position(degrees) + bottomRight.position(degrees))/4;
 
-    if (over50 == true)
-    {
-      if (abs(averagePosition)*0.08866 < 50)
-      {
-        intakeError = 100;
-      }
-      else
-      {
-        int degreesAfter50 = abs(averagePosition)-subtractFromPosition;
-        intakeError = -85*(degreesAfter50-fiftyDegrees)/fiftyDegrees; //was 50
-      }
-    }
-    else
-    {
-      intakeError = (averagePosition - desiredDrive)*-75/desiredDrive; //was 40
-    }
-    if(intakeError < 15) //usually 7
-    {
-      intakeError = 15;
-    }
+//     if (over50 == true)
+//     {
+//       if (abs(averagePosition)*0.08866 < 50)
+//       {
+//         intakeError = 100;
+//       }
+//       else
+//       {
+//         int degreesAfter50 = abs(averagePosition)-subtractFromPosition;
+//         intakeError = -85*(degreesAfter50-fiftyDegrees)/fiftyDegrees; //was 50
+//       }
+//     }
+//     else
+//     {
+//       intakeError = (averagePosition - desiredDrive)*-75/desiredDrive; //was 40
+//     }
+//     if(intakeError < 15) //usually 7
+//     {
+//       intakeError = 15;
+//     }
 
-    readyToPrint();
-    Brain.Screen.print(intakeError);
+//     readyToPrint();
+//     Brain.Screen.print(intakeError);
     
-    intakeMotor.setVelocity(80, percent);
-    topLeft.setVelocity(coef*intakeError, percent);
-    topRight.setVelocity(coef*intakeError, percent);
-    bottomLeft.setVelocity(coef*intakeError, percent);
-    bottomRight.setVelocity(coef*intakeError, percent);
+//     intakeMotor.setVelocity(80, percent);
+//     topLeft.setVelocity(coef*intakeError, percent);
+//     topRight.setVelocity(coef*intakeError, percent);
+//     bottomLeft.setVelocity(coef*intakeError, percent);
+//     bottomRight.setVelocity(coef*intakeError, percent);
 
-    intakePrevError = intakeError;
-    vex::task::sleep(20);
-  }
-  stopDriving();
-  intakeMotor.stop();
-  return 1;
-}
+//     intakePrevError = intakeError;
+//     vex::task::sleep(20);
+//   }
+//   stopDriving();
+//   intakeMotor.stop();
+//   return 1;
+// }
 
-void triggerAuton(void)
-{
-  // triggerMotor.stop();
-  triggerMotor.setVelocity(100, percent);
-  triggerMotor.spin(forward);
-  triggerMotor.spinFor(forward, 30, degrees, true);
-  triggerMotor.spinFor(forward, -10, degrees, true);
-  triggerMotor.stop();
-}
+// void triggerAuton(void)
+// {
+//   // triggerMotor.stop();
+//   triggerMotor.setVelocity(100, percent);
+//   triggerMotor.spin(forward);
+//   triggerMotor.spinFor(forward, 30, degrees, true);
+//   triggerMotor.spinFor(forward, -10, degrees, true);
+//   triggerMotor.stop();
+// }
 
 ////////////////////////////////////////////////////////////
 //TURNING PID
@@ -348,7 +328,7 @@ int turnPID(float angle, int startSpeed)
   Brain.Screen.print("starting turn");
 
   inertialSensor.setRotation(0, degrees);
-  int desiredTurn = angle;
+  int desiredTurn = angle*0.989;
 
   topLeft.spin(forward);
   topRight.spin(forward);
@@ -371,10 +351,10 @@ int turnPID(float angle, int startSpeed)
   {
     turnError = (inertialSensor.rotation(degrees) - desiredTurn)*-1*startSpeed/desiredTurn;
 
-    // readyToPrint();
-    // Brain.Screen.print(inertialSensor.rotation(degrees));
+    printToController();
+    Controller1.Screen.print(inertialSensor.rotation(degrees));
 
-    if(turnError <1)
+    if(abs(inertialSensor.rotation(degrees) - desiredTurn) <= 1)
     {
       stopDriving();
       readyToPrint();
@@ -400,6 +380,40 @@ int turnPID(float angle, int startSpeed)
   return 1;
 }
 
+void testLength(int degrees_number, int speed)
+{
+  topLeft.setPosition(0, degrees);
+  bottomLeft.setPosition(0, degrees);
+  topRight.setPosition(0, degrees);
+  bottomRight.setPosition(0, degrees);
+
+  topLeft.spin(forward);
+  topRight.spin(forward);
+  bottomLeft.spin(forward);
+  bottomRight.spin(forward);
+
+  topLeft.setVelocity(speed, percent);
+  topRight.setVelocity(speed, percent);
+  bottomLeft.setVelocity(speed, percent);
+  bottomRight.setVelocity(speed, percent);
+  int averagePosition = 0;
+  while (true)
+  {
+    printToController();
+    Controller1.Screen.print(topLeft.position(degrees));
+    averagePosition = (abs(topLeft.position(degrees)) + abs(bottomLeft.position(degrees)) 
+    + abs(topRight.position(degrees)) + abs(bottomRight.position(degrees)))/4;
+    if(abs(averagePosition) >= degrees_number)
+    {
+      stopDriving();
+      break;
+    }
+    vex::task::sleep(20);
+  }
+    printToController();
+    Controller1.Screen.print("done");
+}
+
 ////////////////////////////////////////////////////////////
 //DRIVING PID
 ////////////////////////////////////////////////////////////
@@ -416,7 +430,7 @@ int drivePID(int cm, int startVelocity)
   topRight.setPosition(0, degrees);
   bottomRight.setPosition(0, degrees);
 
-  int desiredDrive = cm/0.08866;
+  int desiredDrive = 0.97*cm/0.0613889;
   bool over50 = false;
   if (abs(cm) > 50)
   {
@@ -441,6 +455,8 @@ int drivePID(int cm, int startVelocity)
   int subtractFromPosition  = (abs(cm)-50)/0.08866;
   while (abs(averagePosition) <= abs(desiredDrive))
   {
+    readyToPrint();
+    Brain.Screen.print(100* abs(averagePosition)/abs(desiredDrive));
     averagePosition = (topLeft.position(degrees) + bottomLeft.position(degrees) 
     + topRight.position(degrees) + bottomRight.position(degrees))/4;
 
@@ -464,11 +480,8 @@ int drivePID(int cm, int startVelocity)
 
     if(driveError < 15) //usually 7
     {
-      driveError = 15;
+      driveError = 10;
     }
-
-    // readyToPrint();
-    // Brain.Screen.print(driveError);
     
     topLeft.setVelocity(coef*driveError, percent);
     topRight.setVelocity(coef*driveError, percent);
@@ -484,6 +497,8 @@ int drivePID(int cm, int startVelocity)
 
 void leftSimple(int speed) //for use with camera
 {
+  readyToPrint();
+  Brain.Screen.print("starting turn");
   topLeft.setVelocity(-1*speed, percent);
   topRight.setVelocity(speed, percent);
   bottomLeft.setVelocity(-1*speed, percent);
@@ -508,155 +523,155 @@ void rightSimple(int speed) //for use with camera
   bottomRight.spin(forward);
 }
 
-void shootLow(int speed, int numDiscs) //shoot into the low goal
-{
-  wait(0.1, seconds);
-  shootMotor.spin(forward);
-  shootMotor.setVelocity(speed, percent);
-  wait(1.5, seconds);
+// void shootLow(int speed, int numDiscs) //shoot into the low goal
+// {
+//   wait(0.1, seconds);
+//   shootMotor.spin(forward);
+//   shootMotor.setVelocity(speed, percent);
+//   wait(1.5, seconds);
 
-  for (int i = 1; i<= numDiscs; i++)
-  {
-    triggerMotor.spin(forward);
-    triggerMotor.setVelocity(40, percent);
-    wait(0.8, seconds);
-    triggerMotor.stop();
-    // wait(1, seconds);
-  }
-  shootMotor.stop();
-}
+//   for (int i = 1; i<= numDiscs; i++)
+//   {
+//     triggerMotor.spin(forward);
+//     triggerMotor.setVelocity(40, percent);
+//     wait(0.8, seconds);
+//     triggerMotor.stop();
+//     // wait(1, seconds);
+//   }
+//   shootMotor.stop();
+// }
 
 // void stableShootAuton()
 
-void shootHigh (int speedRPM, int numDiscs) //shoot into the high goal
-{
-  wait(0.1, seconds);
-  shootMotor.spin(forward);
-  shootMotor.setVelocity(speedRPM, rpm);
-  for (int i = 1; i<= numDiscs; i++)
-  {
-    wait(0.2, seconds);
-    triggerMotor.spin(forward);
-    triggerMotor.setVelocity(40, percent);
-    wait(0.75, seconds);
-    triggerMotor.stop();
+// void shootHigh (int speedRPM, int numDiscs) //shoot into the high goal
+// {
+//   wait(0.1, seconds);
+//   shootMotor.spin(forward);
+//   shootMotor.setVelocity(speedRPM, rpm);
+//   for (int i = 1; i<= numDiscs; i++)
+//   {
+//     wait(0.2, seconds);
+//     triggerMotor.spin(forward);
+//     triggerMotor.setVelocity(40, percent);
+//     wait(0.75, seconds);
+//     triggerMotor.stop();
 
-    wait(0.5, seconds);
-    intakeMotor.spin(forward);
-    intakeMotor.setVelocity(80, percent);
-    wait(0.5, seconds);
-    intakeMotor.stop();
+//     wait(0.5, seconds);
+//     intakeMotor.spin(forward);
+//     intakeMotor.setVelocity(80, percent);
+//     wait(0.5, seconds);
+//     intakeMotor.stop();
 
-    wait(2.35, seconds); //was 2
-  }
-  shootMotor.stop();
-}
+//     wait(2.35, seconds); //was 2
+//   }
+//   shootMotor.stop();
+// }
 
 
 
-int alignBlue() //auto align with goal (for auton)
-{
-  inertialSensor.resetRotation();
-  int goalX;
-    if (Vision18.takeSnapshot(Vision18__BLUE_GOAL) < 1) //NEW!
-    {
-      stopDriving();
-      readyToPrint();
-      Brain.Screen.print("no blue");
-      return 1;
-    }
-    goalX = Vision18.largestObject.centerX;
-    readyToPrint();
-    Brain.Screen.print(goalX);
-    if (goalX <= 156 && goalX != 0)
-    {
-      leftSimple(10);
-      readyToPrint();
-      Brain.Screen.print("goal on the left");
-    }
-    if (goalX >= 160)
-    {
-      rightSimple(10);
-      readyToPrint();
-      Brain.Screen.print("goal on the right");
-    }
-    while (true)
-    {
-      if (abs(inertialSensor.rotation(degrees)) > 45)
-      {
-        shootAuton = false;
-        break;
-      }
-      Vision18.takeSnapshot(Vision18__BLUE_GOAL);
-      goalX = Vision18.largestObject.centerX;
-      if (goalX >= 160 || goalX <= 156) //middle is at 158 pixels!
-      {
-        readyToPrint();
-        Brain.Screen.print(goalX);
-        wait(20, msec);
-      }
-      else
-      {
-        break;
-      }
-    }
-    readyToPrint();
-    Brain.Screen.print("aligned");
-    stopDriving();
-    return 1;
-}
+// int alignBlue() //auto align with goal (for auton)
+// {
+//   inertialSensor.resetRotation();
+//   int goalX;
+//     if (Vision18.takeSnapshot(Vision18__BLUE_GOAL) < 1) //NEW!
+//     {
+//       stopDriving();
+//       readyToPrint();
+//       Brain.Screen.print("no blue");
+//       return 1;
+//     }
+//     goalX = Vision18.largestObject.centerX;
+//     readyToPrint();
+//     Brain.Screen.print(goalX);
+//     if (goalX <= 156 && goalX != 0)
+//     {
+//       leftSimple(10);
+//       readyToPrint();
+//       Brain.Screen.print("goal on the left");
+//     }
+//     if (goalX >= 160)
+//     {
+//       rightSimple(10);
+//       readyToPrint();
+//       Brain.Screen.print("goal on the right");
+//     }
+//     while (true)
+//     {
+//       if (abs(inertialSensor.rotation(degrees)) > 45)
+//       {
+//         shootAuton = false;
+//         break;
+//       }
+//       Vision18.takeSnapshot(Vision18__BLUE_GOAL);
+//       goalX = Vision18.largestObject.centerX;
+//       if (goalX >= 160 || goalX <= 156) //middle is at 158 pixels!
+//       {
+//         readyToPrint();
+//         Brain.Screen.print(goalX);
+//         wait(20, msec);
+//       }
+//       else
+//       {
+//         break;
+//       }
+//     }
+//     readyToPrint();
+//     Brain.Screen.print("aligned");
+//     stopDriving();
+//     return 1;
+// }
 
-int alignRed() //auto align with red goal (for auton)
-{
-  inertialSensor.resetRotation();
-  int goalX;
-    if (Vision18.takeSnapshot(Vision18__RED_GOAL) < 1) 
-    {
-      stopDriving();
-      readyToPrint();
-      Brain.Screen.print("no red");
-      return 1;
-    }
-    goalX = Vision18.largestObject.centerX;
-    readyToPrint();
-    Brain.Screen.print(goalX);
-    if (goalX <= 156 && goalX != 0)
-    {
-      leftSimple(10);
-      readyToPrint();
-      Brain.Screen.print("goal on the left");
-    }
-    if (goalX >= 160)
-    {
-      rightSimple(10);
-      readyToPrint();
-      Brain.Screen.print("goal on the right");
-    }
-    while (true)
-    {
-      if (abs(inertialSensor.rotation(degrees)) > 45)
-      {
-        shootAuton = false;
-        break;
-      }
-      Vision18.takeSnapshot(Vision18__RED_GOAL);
-      goalX = Vision18.largestObject.centerX;
-      if (goalX >= 160 || goalX <= 156) //middle is at 158 pixels!
-      {
-        readyToPrint();
-        Brain.Screen.print(goalX);
-        wait(20, msec);
-      }
-      else
-      {
-        break;
-      }
-    }
-    readyToPrint();
-    Brain.Screen.print("aligned");
-    stopDriving();
-    return 1;
-}
+// int alignRed() //auto align with red goal (for auton)
+// {
+//   inertialSensor.resetRotation();
+//   int goalX;
+//     if (Vision18.takeSnapshot(Vision18__RED_GOAL) < 1) 
+//     {
+//       stopDriving();
+//       readyToPrint();
+//       Brain.Screen.print("no red");
+//       return 1;
+//     }
+//     goalX = Vision18.largestObject.centerX;
+//     readyToPrint();
+//     Brain.Screen.print(goalX);
+//     if (goalX <= 156 && goalX != 0)
+//     {
+//       leftSimple(10);
+//       readyToPrint();
+//       Brain.Screen.print("goal on the left");
+//     }
+//     if (goalX >= 160)
+//     {
+//       rightSimple(10);
+//       readyToPrint();
+//       Brain.Screen.print("goal on the right");
+//     }
+//     while (true)
+//     {
+//       if (abs(inertialSensor.rotation(degrees)) > 45)
+//       {
+//         shootAuton = false;
+//         break;
+//       }
+//       Vision18.takeSnapshot(Vision18__RED_GOAL);
+//       goalX = Vision18.largestObject.centerX;
+//       if (goalX >= 160 || goalX <= 156) //middle is at 158 pixels!
+//       {
+//         readyToPrint();
+//         Brain.Screen.print(goalX);
+//         wait(20, msec);
+//       }
+//       else
+//       {
+//         break;
+//       }
+//     }
+//     readyToPrint();
+//     Brain.Screen.print("aligned");
+//     stopDriving();
+//     return 1;
+// }
 
 // void alignUserRed() //prints guide (for driver)
 // {
@@ -702,207 +717,206 @@ int alignRed() //auto align with red goal (for auton)
 //     printGuide(2);
 // }
 
-task shootStabilized(double secondsTimer) {
-  shootMotor.resetPosition();
-  double veloError;
-  double shootSpeed = normalSpeed ? 124 : 110;
+// task shootStabilized(double secondsTimer) {
+//   shootMotor.resetPosition();
+//   double veloError;
+//   double shootSpeed = normalSpeed ? 124 : 110;
 
-  vex::timer myTimer;
-  myTimer.clear();
+//   vex::timer myTimer;
+//   myTimer.clear();
 
-  while(secondsTimer > myTimer.value()) {
-    shootMotor.spin(forward);
-    veloError = (shootSpeed - shootMotor.velocity(rpm))/shootSpeed; 
-    readyToPrint();
-    Brain.Screen.print(veloError*100);
-    shootMotor.setVelocity(shootMotor.velocity(percent) + 10*veloError, percent); 
+//   while(secondsTimer > myTimer.value()) {
+//     shootMotor.spin(forward);
+//     veloError = (shootSpeed - shootMotor.velocity(rpm))/shootSpeed; 
+//     readyToPrint();
+//     Brain.Screen.print(veloError*100);
+//     shootMotor.setVelocity(shootMotor.velocity(percent) + 10*veloError, percent); 
 
-    wait(20, msec);
-  }
-  shootMotor.stop();
-  return vex::task();
-}
+//     wait(20, msec);
+//   }
+//   shootMotor.stop();
+//   return vex::task();
+// }
 
-void dipIntoRoller(bool firstRoller = false) {
-  if (firstRoller) {
-    drivePID(-5, 5);
-  } else {
-    drivePID(-55, 10);
-  }
-  wait(.1, seconds);
-  intakeMotor.spin(forward);
-  intakeMotor.setVelocity(60, percent);
-  intakeMotor.spinFor(.4, seconds);
-  drivePID(50, 50);
-}
+// void dipIntoRoller(bool firstRoller = false) {
+//   if (firstRoller) {
+//     drivePID(-5, 5);
+//   } else {
+//     drivePID(-55, 10);
+//   }
+//   wait(.1, seconds);
+//   intakeMotor.spin(forward);
+//   intakeMotor.setVelocity(60, percent);
+//   intakeMotor.spinFor(.4, seconds);
+//   drivePID(50, 50);
+// }
 
-void AS4RollerExpansion(void) {
-  double shootPercentage = .72;
-  bool playingItSafe = true;
-  bool takingShots = true;
+// void AS4RollerExpansion(void) {
+//   double shootPercentage = .72;
+//   bool playingItSafe = true;
+//   bool takingShots = true;
 
-  strafe(-1, 2, 5);
+//   strafe(-1, 2, 5);
 
-  //dip into roller
-  dipIntoRoller(true);
+//   //dip into roller
+//   dipIntoRoller(true);
 
-  turnPID(90, 50);
-  if (takingShots) {
-      shootMotor.spin(forward);
-      shootMotor.setVelocity(shootPercentage * 100, percent);
-  }
+//   turnPID(90, 50);
+//   if (takingShots) {
+//       shootMotor.spin(forward);
+//       shootMotor.setVelocity(shootPercentage * 100, percent);
+//   }
 
-  //dip into roller
-  dipIntoRoller();
+//   //dip into roller
+//   dipIntoRoller();
 
-  wait(.5, seconds);
-  if (takingShots) {
-    turnPID(12.5, 5);
-    wait(.125, seconds);
-    shootHigh(shootPercentage * 200, 2);
-    turnPID(-60, 5);
-  } else {
-    turnPID(-45, 5);
-  }
+//   wait(.5, seconds);
+//   if (takingShots) {
+//     turnPID(12.5, 5);
+//     wait(.125, seconds);
+//     shootHigh(shootPercentage * 200, 2);
+//     turnPID(-60, 5);
+//   } else {
+//     turnPID(-45, 5);
+//   }
 
-  //either 2 rollers + expansion (true) or 4 rollers + expansion (false)
-  if (!playingItSafe) {
-    drivePID(250, 60);
-    wait(.5, seconds);
-    turnPID(-135, 50);
+//   //either 2 rollers + expansion (true) or 4 rollers + expansion (false)
+//   if (!playingItSafe) {
+//     drivePID(250, 60);
+//     wait(.5, seconds);
+//     turnPID(-135, 50);
 
-    //dip into roller
-    dipIntoRoller();
-    shootHigh(0.72*200, 2);
-    turnPID(-90, 40);
+//     //dip into roller
+//     dipIntoRoller();
+//     shootHigh(0.72*200, 2);
+//     turnPID(-90, 40);
 
-    //dip into roller
-    dipIntoRoller();
+//     //dip into roller
+//     dipIntoRoller();
 
-    wait(.5, seconds);
-    turnPID(45, 40);
-  }
+//     wait(.5, seconds);
+//     turnPID(45, 40);
+//   }
 
-  //drop expansion
-  expansionMotor.spin(forward);
-  expansionMotor.setVelocity(50, percent);
-  expansionMotor.spinFor(.5, seconds);
-  wait(2, seconds);
+//   //drop expansion
+//   expansionMotor.spin(forward);
+//   expansionMotor.setVelocity(50, percent);
+//   expansionMotor.spinFor(.5, seconds);
+//   wait(2, seconds);
 
-  drivePID(280, 90);
-}
+//   drivePID(280, 90);
+// }
 
-void pushLeft(void) //basic left auton that only does roller
-{
-  drivePID(-3, 5);
-  intakeMotor.spin(forward);
-  intakeMotor.setVelocity(40, percent);
-  intakeMotor.spinFor(0.60, seconds); //roller, 0.85 best for comp
-}
+// void pushLeft(void) //basic left auton that only does roller
+// {
+//   drivePID(-3, 5);
+//   intakeMotor.spin(forward);
+//   intakeMotor.setVelocity(40, percent);
+//   intakeMotor.spinFor(0.60, seconds); //roller, 0.85 best for comp
+// }
 
-void senseRight(void) 
-//this one is like the main right auton that shoots into the high goal
-{
-  while (inertialSensor.isCalibrating()) 
-  {
-    wait(0.1, seconds);
-  }
-  inertialSensor.setRotation(0, degrees);
-  drivePID(68, 40);
-  shootMotor.spin(forward);
-  shootMotor.setVelocity(73, percent);
-  turnPID(-88, 80);
-  drivePID(-7, 20);
+// void senseRight(void) 
+// //this one is like the main right auton that shoots into the high goal
+// {
+//   while (inertialSensor.isCalibrating()) 
+//   {
+//     wait(0.1, seconds);
+//   }
+//   inertialSensor.setRotation(0, degrees);
+//   drivePID(68, 40);
+//   shootMotor.spin(forward);
+//   shootMotor.setVelocity(73, percent);
+//   turnPID(-88, 80);
+//   drivePID(-7, 20);
 
-  wait(0.25, seconds);
-//i love schenanigans
-  intakeMotor.spin(forward);
-  intakeMotor.setVelocity(20, percent);
-  intakeMotor.spinFor(0.62, seconds); //roller, 0.85 best for comp
+//   wait(0.25, seconds);
+// //i love schenanigans
+//   intakeMotor.spin(forward);
+//   intakeMotor.setVelocity(20, percent);
+//   intakeMotor.spinFor(0.62, seconds); //roller, 0.85 best for comp
   
-  wait(0.25, seconds);
-  stopDriving();
+//   wait(0.25, seconds);
+//   stopDriving();
 
-  drivePID(2, 5);
-  // if (isRed)
-  // {
-  //   alignRed();
-  //   readyToPrint();
-  //   Brain.Screen.print("aligned");
-  // }
-  // if (!isRed)
-  // {
-  //   alignBlue();
-  // }
-  turnPID(22, 15); 
-  wait(1.7, seconds); //was 4
-  // if (shootAuton)
-  // {
-    shootHigh(0.76*200, 2);
-  // }
-  // if (!shootAuton)
-  // {
-  //   shootMotor.stop();
-  // }
-  // wait(5, seconds);
-  // drivePID(30, 50);
-  // expansionMotor.spin(forward);
-  // expansionMotor.setVelocity(40, percent);
-  // wait(0.8, seconds);
-  // drivePID(200, 60);
-}
+//   drivePID(2, 5);
+//   // if (isRed)
+//   // {
+//   //   alignRed();
+//   //   readyToPrint();
+//   //   Brain.Screen.print("aligned");
+//   // }
+//   // if (!isRed)
+//   // {
+//   //   alignBlue();
+//   // }
+//   turnPID(22, 15); 
+//   wait(1.7, seconds); //was 4
+//   // if (shootAuton)
+//   // {
+//     shootHigh(0.76*200, 2);
+//   // }
+//   // if (!shootAuton)
+//   // {
+//   //   shootMotor.stop();
+//   // }
+//   // wait(5, seconds);
+//   // drivePID(30, 50);
+//   // expansionMotor.spin(forward);
+//   // expansionMotor.setVelocity(40, percent);
+//   // wait(0.8, seconds);
+//   // drivePID(200, 60);
+// }
 
-void nonSenseRight() //right auton that shoots into the low goal
-{
-  turnPID(90, 80);
-  drivePID(62, 60);
-  turnPID(-90, 80);
-  drivePID(-7, 20);
+// void nonSenseRight() //right auton that shoots into the low goal
+// {
+//   turnPID(90, 80);
+//   drivePID(62, 60);
+//   turnPID(-90, 80);
+//   drivePID(-7, 20);
 
-  wait(0.25, seconds);
+//   wait(0.25, seconds);
 
-  intakeMotor.spin(forward);
-  intakeMotor.setVelocity(20, percent);
-  intakeMotor.spinFor(0.6, seconds); //roller, 0.85 best for comp
+//   intakeMotor.spin(forward);
+//   intakeMotor.setVelocity(20, percent);
+//   intakeMotor.spinFor(0.6, seconds); //roller, 0.85 best for comp
 
-  stopDriving();
+//   stopDriving();
 
-  drivePID(5, 60);
-  turnPID(-80, 80);
-  shootLow(50, 2);
-}
+//   drivePID(5, 60);
+//   turnPID(-80, 80);
+//   shootLow(50, 2);
+// }
 
-void testShooting() {
-  vex::task(shootStabilized(6));
-  wait(2, seconds);
+// void testShooting() {
+//   vex::task(shootStabilized(6));
+//   wait(2, seconds);
   
-  triggerMotor.spin(forward);
-  triggerMotor.setVelocity(40, percent);
+//   triggerMotor.spin(forward);
+//   triggerMotor.setVelocity(40, percent);
 
-  for (int i = 0; i < 3; i++) {
-      wait(1, seconds);
-      triggerMotor.spinFor(1, seconds);
-  }
-}
+//   for (int i = 0; i < 3; i++) {
+//       wait(1, seconds);
+//       triggerMotor.spinFor(1, seconds);
+//   }
+// }
 
 void autonomous(void) {
   // ..........................................................................
   // Insert autonomous user code here.
   // ..........................................................................
-  if (isSkills) {
-    AS4RollerExpansion();
-  } else {
-    // senseRight();
-    shootMotor.spin(forward);
-    shootMotor.setVelocity(50, percent);
-  }
+  // if (isSkills) {
+  //   AS4RollerExpansion();
+  // } else {
+  //   // senseRight();
+  //   shootMotor.spin(forward);
+  //   shootMotor.setVelocity(50, percent);
+  // }
 
   //rpm testing line:
   //testShooting();
 
 // alignRed();
-// topRight.spin(forward, 30, percent);
-  
+  drivePID(100, 20);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -934,6 +948,29 @@ void speedDown(void)
   printToController();
   Controller1.Screen.print("55");
 }
+
+void testMethod(void)
+{
+    while(Controller1.ButtonR2.pressing())
+    {
+      testerMotor.spin(forward);
+      testerMotor.setVelocity(100, percent);
+      wait(20, msec);
+    }
+    testerMotor.stop();
+}
+
+void testMethod2(void)
+{
+    while(Controller1.ButtonR1.pressing())
+    {
+      testerMotor.spin(forward);
+      testerMotor.setVelocity(-100, percent);
+      wait(20, msec);
+    }
+    testerMotor.stop();
+}
+
 void speedUp(void)
 {
   normalSpeed = true;
@@ -941,109 +978,124 @@ void speedUp(void)
   Controller1.Screen.print("62");
 }
 
-void shoot(void)
+void openPneumatics(void)
 {
-  int coef = 1;
-  if (shooterOutward)
-  {
-    coef = 1;
-  } else {
-    coef = -1;
-  }
-  shootMotor.resetPosition();
-  double veloError;
-  while(Controller1.ButtonR2.pressing())
-  {
-    shootMotor.spin(forward);
-    if (normalSpeed)
-    {
-      veloError = (124 - shootMotor.velocity(rpm))/124; 
-      // shootMotor.setVelocity(0.62*200, rpm); //old/control w more oscillation
-      readyToPrint();
-      Brain.Screen.print(veloError*100);
-      shootMotor.setVelocity(shootMotor.velocity(percent) + 10*veloError, percent); 
-      //originally 10 can change
-    } else {
-      veloError = (110 - shootMotor.velocity(rpm))/110;
-      // shootMotor.setVelocity(110, rpm); //old/control w more oscillation
-      readyToPrint();
-      Brain.Screen.print(veloError*100);
-      shootMotor.setVelocity(shootMotor.velocity(percent) + 10*veloError, percent); 
-      //originally 10 can change
-    }
-    // readyToPrint();
-    // Brain.Screen.print("shoot");
-    wait(20, msec);
-  }
-  // readyToPrint();
-  // Brain.Screen.print("stop shoot");
-  shootMotor.stop();
+  pneumaticsLeft.set(true);
+  pneumaticsRight.set(true);
+  printToController();
+  Controller1.Screen.print("pneumatics open");
 }
 
-void triggerBack(void)
+void closePneumatics(void)
 {
-  triggerMotor.setPosition(0, degrees);
-  triggerMotor.spin(forward);
-  triggerMotor.setVelocity(40, percent);
-  while(Controller1.ButtonR1.pressing())
-  {
-    wait(20, msec);
-  }
-  triggerMotor.stop();
+  pneumaticsLeft.set(false);
+  pneumaticsRight.set(false);
 }
 
-void intakeForward(void)
-{
-  while(Controller1.ButtonL1.pressing())
-  {
-    intakeMotor.spin(forward);
-    intakeMotor.setVelocity(100, percent);
-    readyToPrint();
-    Brain.Screen.print("intake forward");
-    wait(20, msec);
-  }
-  readyToPrint();
-  Brain.Screen.print("stop intake forward");
-  intakeMotor.stop();
-}
+// void shoot(void)
+// {
+//   int coef = 1;
+//   if (shooterOutward)
+//   {
+//     coef = 1;
+//   } else {
+//     coef = -1;
+//   }
+//   shootMotor.resetPosition();
+//   double veloError;
+//   while(Controller1.ButtonR2.pressing())
+//   {
+//     shootMotor.spin(forward);
+//     if (normalSpeed)
+//     {
+//       veloError = (124 - shootMotor.velocity(rpm))/124; 
+//       // shootMotor.setVelocity(0.62*200, rpm); //old/control w more oscillation
+//       readyToPrint();
+//       Brain.Screen.print(veloError*100);
+//       shootMotor.setVelocity(shootMotor.velocity(percent) + 10*veloError, percent); 
+//       //originally 10 can change
+//     } else {
+//       veloError = (110 - shootMotor.velocity(rpm))/110;
+//       // shootMotor.setVelocity(110, rpm); //old/control w more oscillation
+//       readyToPrint();
+//       Brain.Screen.print(veloError*100);
+//       shootMotor.setVelocity(shootMotor.velocity(percent) + 10*veloError, percent); 
+//       //originally 10 can change
+//     }
+//     // readyToPrint();
+//     // Brain.Screen.print("shoot");
+//     wait(20, msec);
+//   }
+//   // readyToPrint();
+//   // Brain.Screen.print("stop shoot");
+//   shootMotor.stop();
+// }
 
-void intakeBackward(void)
-{
-  while(Controller1.ButtonL2.pressing())
-  {
-    intakeMotor.spin(forward);
-    intakeMotor.setVelocity(-100, percent);
-    readyToPrint();
-    Brain.Screen.print("intake back");
-    wait(20, msec);
-  }
-  readyToPrint();
-  Brain.Screen.print("stop intake back");
-  intakeMotor.stop();
-}
+// void triggerBack(void)
+// {
+//   triggerMotor.setPosition(0, degrees);
+//   triggerMotor.spin(forward);
+//   triggerMotor.setVelocity(40, percent);
+//   while(Controller1.ButtonR1.pressing())
+//   {
+//     wait(20, msec);
+//   }
+//   triggerMotor.stop();
+// }
 
-vex::timer myTimer;
+// void intakeForward(void)
+// {
+//   while(Controller1.ButtonL1.pressing())
+//   {
+//     intakeMotor.spin(forward);
+//     intakeMotor.setVelocity(100, percent);
+//     readyToPrint();
+//     Brain.Screen.print("intake forward");
+//     wait(20, msec);
+//   }
+//   readyToPrint();
+//   Brain.Screen.print("stop intake forward");
+//   intakeMotor.stop();
+// }
 
-void expandForward(void)
-{
-    readyToPrint();
-    Brain.Screen.print("expand forward");
-    while(Controller1.ButtonA.pressing())
-    {
-    expansionMotor.spin(forward);
-    expansionMotor.setVelocity(40, percent);
-    wait(20, msec);
-    }
-    expansionMotor.stop();
-  }
+// void intakeBackward(void)
+// {
+//   while(Controller1.ButtonL2.pressing())
+//   {
+//     intakeMotor.spin(forward);
+//     intakeMotor.setVelocity(-100, percent);
+//     readyToPrint();
+//     Brain.Screen.print("intake back");
+//     wait(20, msec);
+//   }
+//   readyToPrint();
+//   Brain.Screen.print("stop intake back");
+//   intakeMotor.stop();
+// }
+
+// vex::timer myTimer;
+
+// void expandForward(void)
+// {
+//     readyToPrint();
+//     Brain.Screen.print("expand forward");
+//     while(Controller1.ButtonA.pressing())
+//     {
+//     expansionMotor.spin(forward);
+//     expansionMotor.setVelocity(40, percent);
+//     wait(20, msec);
+//     }
+//     expansionMotor.stop();
+//   }
+
 
 void usercontrol(void) {
   // User control code here, inside the loop
-  // shootMotor.setVelocity(30, percent);
-  // shootMotor.spin(forward);
-  myTimer.clear();
+  shootMotor.setVelocity(30, percent);
+  shootMotor.spin(forward);
+  // myTimer.clear();
   Controller1.Screen.clearScreen(); 
-  enableTurnPID = false;
+  // enableTurnPID = false;
   topLeft.spin(forward);
   topRight.spin(forward);
   bottomLeft.spin(forward);
@@ -1062,19 +1114,23 @@ void usercontrol(void) {
     //   alignUserBlue();
     // }
 
-    Controller1.ButtonR2.pressed(shoot);
-    Controller1.ButtonR1.pressed(triggerBack);
+    // Controller1.ButtonR2.pressed(shoot);
+    // Controller1.ButtonR1.pressed(triggerBack);
 
-    Controller1.ButtonL1.pressed(intakeForward);
-    Controller1.ButtonL2.pressed(intakeBackward);
+    // Controller1.ButtonL1.pressed(intakeForward);
+    // Controller1.ButtonL2.pressed(intakeBackward);
 
-    Controller1.ButtonA.pressed(expandForward);
+    // Controller1.ButtonA.pressed(expandForward);
     
-    // Controller1.ButtonY.pressed(shootOut);
-    // Controller1.ButtonA.pressed(shootIn);
+    Controller1.ButtonR1.pressed(testMethod2);
+    Controller1.ButtonR2.pressed(testMethod);
 
     Controller1.ButtonUp.pressed(speedUp);
     Controller1.ButtonDown.pressed(speedDown);
+    
+    Controller1.ButtonA.pressed(openPneumatics);
+    Controller1.ButtonB.pressed(closePneumatics);
+
 
 
 
@@ -1109,6 +1165,27 @@ void usercontrol(void) {
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
   }
+
+   while(Controller1.ButtonR1.PRESSED)
+    {
+      shootMotor.spin(forward);
+    }
+
+  // while(Controller1.ButtonR2.PRESSED)
+  //   {
+  //     conveyorMotor.spin();
+  //   }
+
+  // while(Controller1.ButtonL1.PRESSED)
+  //   {
+  //     intakeMotor.spin(backward);
+  //   }
+
+  while(Controller1.ButtonL2.PRESSED)
+    {
+      shootMotor.spin(forward);
+    }
+    
 }
 
 //

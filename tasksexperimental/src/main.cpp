@@ -681,11 +681,8 @@ void autonomous(void) {
   // Insert autonomous user code here.
   // ..........................................................................
 // senseRight();
-  if (isSkills) {
-    AS4RollerExpansion();
-  } else {
-    newAuton();
-  }
+  topLeft.spin(forward);
+  topLeft.setVelocity(20, percent);
   
 }
 

@@ -19,10 +19,9 @@ extern motor bottomLeft;
 extern motor bottomRight;
 extern inertial inertialSensor;
 extern controller Controller1;
-extern motor triggerMotor;
-extern motor expansionMotor;
-extern motor intakeMotor;
-extern motor shootMotor;
+extern motor testerMotor;
+extern digital_out pneumaticsLeft;
+extern digital_out pneumaticsRight;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.
